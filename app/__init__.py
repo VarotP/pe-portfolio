@@ -5,6 +5,16 @@ from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
 
+@app.context_processor
+def inject_pages():
+    return dict(pages=[
+        {"name": "Home", "endpoint": "index"},
+        {"name": "Hobbies", "endpoint": "index2"}
+    ])
+
+@app.context_processor
+def inject_contact():
+    return { "contact_email": "varotpava@gmail.com", "contact_phone": "+1 672-338-4317" }
 
 @app.route('/')
 def index():
@@ -14,14 +24,14 @@ def index():
     {
         "name": "IFS Copperleaf",
         "title": "PlatOps-Coop",
-        "description": "My first project.",
-        "link": "https://example.com"
+        # "description": "My first project.",
+        # "link": "https://example.com"
     },
     {
         "name": "Agoda (Booking Holdings)", 
         "title": "Infrastructure Intern",
-        "description": "This is the content I just added.", 
-        "link": "https://newproject.com"
+        # "description": "This is the content I just added.", 
+        # "link": "https://newproject.com"
     }],
     about_me = "As a fourth-year Computer Science student at the University of British Columbia, I’ve spent my time mastering the balance between clean code and creative problem-solving. Having completed internships in cloud infrastructure and AI, I specialize in building robust, scalable systems that solve complex problems. I believe the best technology is rooted in curiosity, a principle I carry into both my development projects and my work as a photographer.",
     )

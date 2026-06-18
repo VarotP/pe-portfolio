@@ -22,11 +22,14 @@
 <body>
     <header class="nav-bar">
         <div class="nav-content">
-            <a href="/">
+            <a href="{{ url_for('index') }}">
                 <div class="nav-logo">
                     <img src="./static/img/main/logo.svg" />
                 </div>
             </a>
+            {% for page in pages %}
+                <a href="{{ url_for(page.endpoint) }}">{{ page.name }}</a>
+            {% endfor %}
         </div>
     </header>
 

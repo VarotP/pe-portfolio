@@ -162,6 +162,11 @@ body {
     display: block;
 }
 
+.pictures img:only-child {
+    height: auto;
+    object-fit: contain;
+}
+
 .banner {
     padding: 20px 0px 50px 0px;
     height: 150px;

@@ -15,26 +15,51 @@
         rel="stylesheet">
 
     <link lang='sass' rel="stylesheet" href="./static/styles/main.css">
-    <link rel='icon' href='./static/img/favicon.ico' type='image/x-icon' />
+    <link rel='icon' href='./static/img/main/favicon.ico' type='image/x-icon' />
     <title>{{ title }}</title>
 </head>
 
 <body>
-    <header class="nav-bar">
-        <div class="nav-content">
-            <a href="/">
-                <div class="nav-logo">
-                    <img src="./static/img/logo.svg" />
-                </div>
-            </a>
-        </div>
-    </header>
+     <header class="nav-bar">
+      <div class="nav-content">
+          <a href="{{ url_for('index') }}">
+              <div class="nav-logo">
+                  <img src="./static/img/main/logo.svg" />
+              </div>
+          </a>
+          {% for page in pages %}
+              <a href="{{ url_for(page.endpoint) }}">{{ page.name }}</a>
+          {% endfor %}
+      </div>
+  </header>
 
     <div class="profile">
         <div id="profile-picture" class="profile-picture">
-            <img src="./static/img/logo.jpg">
+            <img src="./static/img/main/logo.jpeg">
         </div>
         <h1>{{ title }}</h1>
     </div>
+    <div class="content">
+        <div class="section">
+            <h2>About Me</h2>
+            <p> {{ about_me }} </p>
+        </div>
+
+        <div class="section">
+            <h2>Work Experience</h2>
+            {% for work in work_experience %}
+            <div class="project">
+                <h3>{{ work.name }}</h3>
+                <p><strong>{{ work.title }}</strong></p>
+                <p>{{ work.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section">
+            <h2>Contact</h2>
+            <p>Email: {{ contact_email }}</p>
+            <p>Phone: {{ contact_phone }}</p>
+        </div>
 </body>
 </html>

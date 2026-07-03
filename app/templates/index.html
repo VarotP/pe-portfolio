@@ -51,7 +51,11 @@
             <div class="project">
                 <h3>{{ work.name }}</h3>
                 <p><strong>{{ work.title }}</strong></p>
-                <p>{{ work.description }}</p>
+                <ul>
+                    {% for point in work.description %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
             </div>
             {% endfor %}
         </div>

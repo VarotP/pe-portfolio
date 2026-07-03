@@ -23,15 +23,13 @@ def index():
     work_experience = [
     {
         "name": "IFS Copperleaf",
-        "title": "PlatOps-Coop",
-        # "description": "My first project.",
-        # "link": "https://example.com"
+        "title": "Software Developer - PlatOps (Co-op)",
+        "description": "Designed and deployed cloud reverse proxy infrastructure across 10+ Azure regions with a multi-module Terraform IaC codebase (NGINXaaS, networking, Key Vault/SSL, monitoring) and a parameterized CI/CD pipeline, reducing deployment to a single pipeline run per environment. Hardened security through NAT gateway outbound IP control, SDP-style NSG restrictions, and managed identity for the TFSProxy service.",
     },
     {
-        "name": "Agoda (Booking Holdings)", 
+        "name": "Agoda (Booking Holdings)",
         "title": "Infrastructure Intern",
-        # "description": "This is the content I just added.", 
-        # "link": "https://newproject.com"
+        "description": "Enabled real-time SSD utilization and power monitoring for 6,000+ ILO servers by extending Go-based scanning tools and building Grafana time-series dashboards (histograms, gauges, statistics), improving predictive maintenance and reducing manual intervention for the infrastructure team.",
     }],
     about_me = "As a fourth-year Computer Science student at the University of British Columbia, I’ve spent my time mastering the balance between clean code and creative problem-solving. Having completed internships in cloud infrastructure and AI, I specialize in building robust, scalable systems that solve complex problems. I believe the best technology is rooted in curiosity, a principle I carry into both my development projects and my work as a photographer.",
     )

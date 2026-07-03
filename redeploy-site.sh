@@ -7,6 +7,6 @@ tmux send-keys -t flask-app "cd pe-portfolio" C-m
 tmux send-keys -t flask-app "git fetch && git reset --hard origin/main" C-m
 tmux send-keys -t flask-app "source python3-virtualenv/bin/activate" C-m
 tmux send-keys -t flask-app "pip install -r requirements.txt" C-m
-tmux send-keys -t flask-app "flask run --host=0.0.0.0 --debug" C-m
+tmux send-keys -t flask-app "flask run --host=0.0.0.0" C-m
 
 echo "Deployment complete"

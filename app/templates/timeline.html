@@ -153,14 +153,25 @@
 
         // Gravatar supports SHA-256 email hashes, so we can hash in the browser
         // with the built-in SubtleCrypto API — no external md5 library needed.
+        // NOTE: crypto.subtle only exists in a secure context (HTTPS or
+        // localhost). Over plain HTTP it's undefined, so fall back to a generic
+        // avatar instead of throwing (which would break the whole render).
         async function gravatarUrl(email) {
-            const normalized = email.trim().toLowerCase();
-            const bytes = new TextEncoder().encode(normalized);
-            const digest = await crypto.subtle.digest('SHA-256', bytes);
-            const hash = Array.from(new Uint8Array(digest))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-            return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=96`;
+            const fallback = 'https://www.gravatar.com/avatar/?d=mp&s=96';
+            if (!email || !window.crypto || !window.crypto.subtle) {
+                return fallback;
+            }
+            try {
+                const normalized = email.trim().toLowerCase();
+                const bytes = new TextEncoder().encode(normalized);
+                const digest = await crypto.subtle.digest('SHA-256', bytes);
+                const hash = Array.from(new Uint8Array(digest))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+                return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=96`;
+            } catch (e) {
+                return fallback;
+            }
         }
 
         function escapeHtml(str) {
@@ -192,11 +203,16 @@
 
         // Load all posts (the API already returns them in descending order).
         async function loadPosts() {
-            const res = await fetch('/api/timeline_post');
-            const data = await res.json();
-            listEl.innerHTML = '';
-            for (const post of data.timeline_posts) {
-                listEl.appendChild(await renderPost(post));
+            try {
+                const res = await fetch('/api/timeline_post');
+                const data = await res.json();
+                listEl.innerHTML = '';
+                for (const post of data.timeline_posts) {
+                    listEl.appendChild(await renderPost(post));
+                }
+            } catch (e) {
+                console.error('Failed to load timeline posts', e);
+                errorEl.textContent = 'Could not load timeline posts.';
             }
         }
 

@@ -31,7 +31,8 @@ mydb.create_tables([TimelinePost])
 def inject_pages():
     return dict(pages=[
         {"name": "Home", "endpoint": "index"},
-        {"name": "Hobbies", "endpoint": "index2"}
+        {"name": "Hobbies", "endpoint": "index2"},
+        {"name": "Timeline", "endpoint": "timeline"}
     ])
 
 @app.context_processor
@@ -85,6 +86,10 @@ def index2():
              "./static/img/hobbies/countries.png"]}]
     )
 
+@app.route('/timeline')
+def timeline():
+    return render_template('timeline.html', title="Timeline")
+
 @app.route('/api/timeline_post', methods=['POST'])
 def post_time_line_post():
     name = request.form.get('name')
@@ -110,3 +115,4 @@ def delete_time_line_post(post_id):
         return {'message': 'Timeline post deleted successfully'}
     except TimelinePost.DoesNotExist:
         return {'error': 'Timeline post not found'}, 404
+    

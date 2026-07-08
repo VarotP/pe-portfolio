@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta property="og:title" content="Timeline">
+    <meta property="og:description" content="My Timeline">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+
+    <link lang='sass' rel="stylesheet" href="./static/styles/main.css">
+    <link rel='icon' href='./static/img/main/favicon.ico' type='image/x-icon' />
+    <title>{{ title }}</title>
+
+    <style>
+        .timeline-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 640px;
+            margin: 0 auto 32px;
+        }
+
+        .timeline-form input,
+        .timeline-form textarea {
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .timeline-form textarea {
+            min-height: 96px;
+            resize: vertical;
+        }
+
+        .timeline-form button {
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #222;
+            color: #fff;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+
+        .timeline-form button:hover {
+            background: #444;
+        }
+
+        .form-error {
+            color: #c0392b;
+            font-size: 0.9rem;
+            min-height: 1em;
+        }
+
+        .timeline-list {
+            list-style: none;
+            padding: 0;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .timeline-post {
+            display: flex;
+            gap: 14px;
+            padding: 16px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .timeline-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .timeline-body {
+            flex: 1;
+        }
+
+        .timeline-meta {
+            margin: 0 0 6px;
+        }
+
+        .timeline-name {
+            font-weight: 700;
+        }
+
+        .timeline-email {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .timeline-date {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        .timeline-content {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="nav-bar">
+        <div class="nav-content">
+            <a href="{{ url_for('index') }}">
+                <div class="nav-logo">
+                    <img src="./static/img/main/logo.svg" />
+                </div>
+            </a>
+            {% for page in pages %}
+            <a href="{{ url_for(page.endpoint) }}">{{ page.name }}</a>
+            {% endfor %}
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="section">
+            <h2>Add a Timeline Post</h2>
+            <form id="timeline-form" class="timeline-form">
+                <input type="text" id="name" name="name" placeholder="Name" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+                <textarea id="content" name="content" placeholder="What's on your mind?" required></textarea>
+                <p id="form-error" class="form-error"></p>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>Timeline</h2>
+            <ul id="timeline-list" class="timeline-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('timeline-form');
+        const errorEl = document.getElementById('form-error');
+        const listEl = document.getElementById('timeline-list');
+
+        // Gravatar supports SHA-256 email hashes, so we can hash in the browser
+        // with the built-in SubtleCrypto API — no external md5 library needed.
+        async function gravatarUrl(email) {
+            const normalized = email.trim().toLowerCase();
+            const bytes = new TextEncoder().encode(normalized);
+            const digest = await crypto.subtle.digest('SHA-256', bytes);
+            const hash = Array.from(new Uint8Array(digest))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+            return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=96`;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : str;
+            return div.innerHTML;
+        }
+
+        async function renderPost(post) {
+            const li = document.createElement('li');
+            li.className = 'timeline-post';
+
+            const avatar = await gravatarUrl(post.email || '');
+            const date = post.created_at ? new Date(post.created_at).toLocaleString() : '';
+
+            li.innerHTML = `
+                <img class="timeline-avatar" src="${avatar}" alt="avatar">
+                <div class="timeline-body">
+                    <p class="timeline-meta">
+                        <span class="timeline-name">${escapeHtml(post.name)}</span>
+                        <span class="timeline-email">${escapeHtml(post.email)}</span>
+                        <span class="timeline-date">${escapeHtml(date)}</span>
+                    </p>
+                    <p class="timeline-content">${escapeHtml(post.content)}</p>
+                </div>
+            `;
+            return li;
+        }
+
+        // Load all posts (the API already returns them in descending order).
+        async function loadPosts() {
+            const res = await fetch('/api/timeline_post');
+            const data = await res.json();
+            listEl.innerHTML = '';
+            for (const post of data.timeline_posts) {
+                listEl.appendChild(await renderPost(post));
+            }
+        }
+
+        // Override submit: POST via fetch instead of a full-page reload.
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            errorEl.textContent = '';
+
+            const formData = new FormData(form);
+            const res = await fetch('/api/timeline_post', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!res.ok) {
+                errorEl.textContent = 'Failed to create post. Please try again.';
+                return;
+            }
+
+            form.reset();
+            // Reload so the newly added post appears at the top.
+            await loadPosts();
+        });
+
+        loadPosts();
+    </script>
+</body>
+
+</html>

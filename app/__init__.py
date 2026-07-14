@@ -24,8 +24,12 @@ class TimelinePost(Model):
     class Meta:
         database = mydb
 
-mydb.connect()
-mydb.create_tables([TimelinePost])
+# Needed because if not set Python tries to set up the DB, but
+# can't and errors with the following error:
+# peewee.InterfaceError: Error, database must be initialized before opening a connection.
+if __name__ == '__main__':
+    mydb.connect()
+    mydb.create_tables([TimelinePost])
 
 @app.context_processor
 def inject_pages():

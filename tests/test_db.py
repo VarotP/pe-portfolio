@@ -38,3 +38,4 @@ class TestTimelinePost(unittest.TestCase):
         self.assertEqual(post_2.name, self.user_2['name'])
         self.assertEqual(post_2.email, self.user_2['email'])
         self.assertEqual(post_2.content, self.user_2['content'])
+        

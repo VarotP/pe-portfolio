@@ -80,8 +80,18 @@ Please make sure to update tests as appropriate.
 
 ## Run tests
 
-To run tests, use the following command
+To all tests use the following command:
 
 ```sh
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+
+To run specific test files, run:
+
+```sh
+python -m unittest -v tests.<file_name>
+
+# For example
 python -m unittest -v tests.test_db
 ```

@@ -1,0 +1,24 @@
+[Unit]
+Description=MLH Portfolio site (gunicorn)
+# The app talks to MariaDB, so don't start before it is up.
+After=network-online.target mariadb.service
+Wants=network-online.target mariadb.service
+
+[Service]
+Type=notify
+User=supreepavaritpong
+Group=supreepavaritpong
+WorkingDirectory=/home/supreepavaritpong/pe-portfolio
+
+# Bind to loopback only: nginx is the sole public entry point.
+ExecStart=/home/supreepavaritpong/pe-portfolio/python3-virtualenv/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:5000 \
+    app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -2,8 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.." || exit 1
 git fetch && git reset --hard origin/main
-source python3-virtualenv/bin/activate
-pip install -r requirements.txt
-systemctl restart myportfolio
+docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml up -d --build
 
 echo "Deployment complete"

@@ -28,11 +28,11 @@ class TimelinePost(Model):
     class Meta:
         database = mydb
 
-# Needed because if not set Python tries to set up the DB, but
-# can't and errors with the following error:
-# peewee.InterfaceError: Error, database must be initialized before opening a connection.
-if __name__ == '__main__':
-    mydb.connect()
+# Create the tables at import time so they exist when the app is served
+# via `flask run` (where __name__ is never '__main__'). Tests set
+# TESTING=true and manage their own table lifecycle, so skip it there.
+if os.getenv("TESTING") != "true":
+    mydb.connect(reuse_if_open=True)
     mydb.create_tables([TimelinePost])
 
 @app.context_processor
